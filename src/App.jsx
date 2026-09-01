@@ -42,12 +42,12 @@ export default function App() {
             <p className="text-xs text-emerald-200">SIH 2026 • Market Linkages & Escrow System</p>
           </div>
           <button 
-            onClick={() => setLang(lang === 'EN' ? 'MR' : 'EN')}
-            className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-600 px-3 py-1.5 rounded-lg text-sm transition"
-          >
-            <Languages className="w-4 h-4" />
-            <span>{lang === 'EN' ? 'मराठी' : 'English'}</span>
-          </button>
+  onClick={() => setLang(lang === 'EN' ? 'MR' : 'EN')}
+  className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-600 px-3 py-1.5 rounded-lg text-sm transition text-white"
+>
+  <Languages className="w-4 h-4" />
+  <span>{lang === 'EN' ? 'मराठी' : 'English'}</span>
+</button>
         </div>
       </header>
 
@@ -109,14 +109,15 @@ export default function App() {
                 <h3 className="text-lg font-bold text-amber-900">Hold Nashik Onion Lots for 4 Days</h3>
                 <p className="text-xs text-amber-700">Demand in Mumbai processing hubs is forecasted to rise by 8% this Friday.</p>
               </div>
-              <button className="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-2 rounded-lg font-semibold">View Forecast</button>
-            </div>
+              <button onClick={() => alert("AI Forecast: Prices for Nashik Onion are expected to peak by Friday due to festival demand spikes. Recommended action: Hold.")}className="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-2 rounded-lg font-semibold transition">View Forecast </button>
 
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-bold">Your Active Crop Listings</h2>
-              <button className="bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-emerald-800">
-                <Plus className="w-4 h-4"/> Create New Lot
-              </button>
+              {/* Add this state at the top of your App component if not already there: const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); */}
+
+<button onClick={() => setIsCreateModalOpen(true)}className="bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-emerald-800 transition">
+  <Plus className="w-4 h-4"/> Create New Lot</button>
+              
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
