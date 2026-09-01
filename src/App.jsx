@@ -20,6 +20,13 @@ export default function App() {
   const [paymentStep, setPaymentStep] = useState('select'); // 'select', 'processing', 'success'
   const [paymentMethod, setPaymentMethod] = useState('upi');
 
+  // Custom UI Modals State
+  const [showForecastModal, setShowForecastModal] = useState(false);
+  const [showCreateLotModal, setShowCreateLotModal] = useState(false);
+  const [newCropName, setNewCropName] = useState('');
+  const [newVolume, setNewVolume] = useState('');
+  const [newPrice, setNewPrice] = useState('');
+
   const handleOpenPayment = (lot) => {
     setSelectedLot(lot);
     setPaymentStep('select');
@@ -29,9 +36,29 @@ export default function App() {
     setPaymentStep('processing');
     setTimeout(() => {
       setPaymentStep('success');
-      // Update lot status to Escrow Locked
       setLots(prev => prev.map(l => l.id === selectedLot.id ? { ...l, status: 'Escrow Locked' } : l));
     }, 2000);
+  };
+
+  const handleCreateLotSubmit = (e) => {
+    e.preventDefault();
+    if (!newCropName || !newVolume || !newPrice) return;
+    
+    const newLotItem = {
+      id: lots.length + 1,
+      crop: newCropName,
+      volume: `${newVolume} Quintals`,
+      price: `₹${newPrice}/Q`,
+      location: 'Maharashtra, MH',
+      grade: 'Grade A',
+      status: 'Available'
+    };
+
+    setLots([newLotItem, ...lots]);
+    setShowCreateLotModal(false);
+    setNewCropName('');
+    setNewVolume('');
+    setNewPrice('');
   };
 
   return (
@@ -119,8 +146,8 @@ export default function App() {
                 <p className="text-xs text-amber-700">Demand in Mumbai processing hubs is forecasted to rise by 8% this Friday.</p>
               </div>
               <button 
-                onClick={() => alert("AI Forecast: Prices for Nashik Onion are expected to peak by Friday due to festival demand spikes. Recommended action: Hold.")}
-                className="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-2 rounded-lg font-semibold transition"
+                onClick={() => setShowForecastModal(true)}
+                className="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-2 rounded-lg font-semibold transition shadow-sm"
               >
                 View Forecast
               </button>
@@ -129,7 +156,7 @@ export default function App() {
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-bold">Your Active Crop Listings</h2>
               <button 
-                onClick={() => alert("Create New Lot modal opened.")}
+                onClick={() => setShowCreateLotModal(true)}
                 className="bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-emerald-800 transition"
               >
                 <Plus className="w-4 h-4"/> Create New Lot
@@ -192,14 +219,92 @@ export default function App() {
         )}
       </main>
 
+      {/* AI FORECAST MODAL */}
+      {showForecastModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onClick={() => setShowForecastModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+              <X className="w-5 h-5" />
+            </button>
+            <h3 className="font-bold text-lg text-amber-900 mb-2">AI Price Forecast (7 Days)</h3>
+            <p className="text-xs text-gray-600 mb-4">
+              Prices for Nashik Red Onion are expected to peak by Friday due to heavy festival demand spikes in Mumbai markets.
+            </p>
+            <div className="bg-amber-50 p-3 rounded-lg border border-amber-200 text-xs text-amber-800 mb-4 font-semibold">
+              Recommended Action: Hold stock for 3–4 days to maximize profit margins.
+            </div>
+            <button 
+              onClick={() => setShowForecastModal(false)}
+              className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs transition"
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* CREATE NEW LOT MODAL */}
+      {showCreateLotModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onClick={() => setShowCreateLotModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+              <X className="w-5 h-5" />
+            </button>
+            <h3 className="font-bold text-lg text-emerald-900 mb-2">Create New Crop Lot</h3>
+            <p className="text-xs text-gray-500 mb-4">List your harvest for verified institutional buyers across Maharashtra.</p>
+            
+            <form onSubmit={handleCreateLotSubmit} className="space-y-3 mb-4">
+              <div>
+                <label className="text-xs font-semibold text-gray-600">Crop Name</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. Solapur Pomegranate" 
+                  value={newCropName}
+                  onChange={(e) => setNewCropName(e.target.value)}
+                  className="w-full text-xs p-2.5 border rounded-lg mt-1"
+                  required 
+                />
+              </div>
+              <div className="flex gap-2">
+                <div className="w-1/2">
+                  <label className="text-xs font-semibold text-gray-600">Volume (Quintals)</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. 40" 
+                    value={newVolume}
+                    onChange={(e) => setNewVolume(e.target.value)}
+                    className="w-full text-xs p-2.5 border rounded-lg mt-1"
+                    required 
+                  />
+                </div>
+                <div className="w-1/2">
+                  <label className="text-xs font-semibold text-gray-600">Price per Quintal (₹)</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. 3200" 
+                    value={newPrice}
+                    onChange={(e) => setNewPrice(e.target.value)}
+                    className="w-full text-xs p-2.5 border rounded-lg mt-1"
+                    required 
+                  />
+                </div>
+              </div>
+              <button 
+                type="submit"
+                className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3 rounded-xl text-sm shadow transition mt-2"
+              >
+                Publish Listing
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* SIMULATED ESCROW PAYMENT MODAL */}
       {selectedLot && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <button 
-              onClick={() => setSelectedLot(null)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-            >
+            <button onClick={() => setSelectedLot(null)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
               <X className="w-5 h-5" />
             </button>
 
@@ -241,10 +346,10 @@ export default function App() {
                   </div>
                 ) : (
                   <div className="space-y-2 mb-4">
-                    <input type="text" placeholder="Card Number (4111 1111 1111 1111)" className="w-full text-xs p-2.5 border rounded-lg" readOnly value="4111 1111 1111 1111" />
+                    <input type="text" className="w-full text-xs p-2.5 border rounded-lg bg-gray-100" readOnly value="4111 1111 1111 1111" />
                     <div className="flex gap-2">
-                      <input type="text" placeholder="MM/YY" className="w-1/2 text-xs p-2.5 border rounded-lg" readOnly value="12/28" />
-                      <input type="text" placeholder="CVV" className="w-1/2 text-xs p-2.5 border rounded-lg" readOnly value="123" />
+                      <input type="text" className="w-1/2 text-xs p-2.5 border rounded-lg bg-gray-100" readOnly value="12/28" />
+                      <input type="text" className="w-1/2 text-xs p-2.5 border rounded-lg bg-gray-100" readOnly value="123" />
                     </div>
                   </div>
                 )}
