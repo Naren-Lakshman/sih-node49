@@ -6,16 +6,18 @@ import {
 
 export default function App() {
   const [lang, setLang] = useState('EN');
-  const [activeTab, setActiveTab] = useState('buyer');
-
+  const [activeTab, setActiveTab] = useState('buyer'); // 'farmer' or 'buyer'
+  
+  // Crop Lots State
   const [lots, setLots] = useState([
     { id: 1, crop: 'Nashik Red Onions', volume: '50 Quintals', price: '₹2,400/Q', location: 'Nashik, MH', grade: 'Grade A', status: 'Available' },
     { id: 2, crop: 'Pune Tomatoes', volume: '30 Quintals', price: '₹1,800/Q', location: 'Pune, MH', grade: 'Grade B', status: 'Available' },
     { id: 3, crop: 'Nagpur Cotton', volume: '100 Quintals', price: '₹6,200/Q', location: 'Nagpur, MH', grade: 'Grade A', status: 'Available' }
   ]);
 
+  // Modal & Payment State
   const [selectedLot, setSelectedLot] = useState(null);
-  const [paymentStep, setPaymentStep] = useState('select');
+  const [paymentStep, setPaymentStep] = useState('select'); // 'select', 'processing', 'success'
   const [paymentMethod, setPaymentMethod] = useState('upi');
 
   const handleOpenPayment = (lot) => {
@@ -27,31 +29,36 @@ export default function App() {
     setPaymentStep('processing');
     setTimeout(() => {
       setPaymentStep('success');
+      // Update lot status to Escrow Locked
       setLots(prev => prev.map(l => l.id === selectedLot.id ? { ...l, status: 'Escrow Locked' } : l));
     }, 2000);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
+      {/* Top Navigation */}
       <header className="bg-emerald-800 text-white p-4 shadow-md sticky top-0 z-10">
         <div className="max-w-6xl mx-auto flex justify-between items-center px-4">
           <div>
             <h1 className="text-xl font-bold tracking-wide">
               {lang === 'EN' ? 'Govt of Maharashtra — Krishi Vikas Portal' : 'महाराष्ट्र शासन — कृषि विकास पोर्टल'}
             </h1>
-            <p className="text-xs text-emerald-200">SIH 2026 • Market Linkages & Escrow System</p>
+            <p className="text-xs text-emerald-200">SIH • Market Linkages & Escrow System</p>
           </div>
           <button 
-  onClick={() => setLang(lang === 'EN' ? 'MR' : 'EN')}
-  className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-600 px-3 py-1.5 rounded-lg text-sm transition text-white"
->
-  <Languages className="w-4 h-4" />
-  <span>{lang === 'EN' ? 'मराठी' : 'English'}</span>
-</button>
+            onClick={() => setLang(lang === 'EN' ? 'MR' : 'EN')}
+            className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-600 px-3 py-1.5 rounded-lg text-sm transition"
+          >
+            <Languages className="w-4 h-4" />
+            <span>{lang === 'EN' ? 'मराठी' : 'English'}</span>
+          </button>
         </div>
       </header>
 
+      {/* Main Container */}
       <main className="max-w-6xl mx-auto p-4 space-y-6">
+        
+        {/* Mandi Live Ticker */}
         <section className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Live Mandi Prices</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -86,6 +93,7 @@ export default function App() {
           </div>
         </section>
 
+        {/* Tab Switcher */}
         <div className="flex bg-gray-200 p-1 rounded-xl">
           <button 
             onClick={() => setActiveTab('farmer')}
@@ -101,6 +109,7 @@ export default function App() {
           </button>
         </div>
 
+        {/* FARMER DASHBOARD TAB */}
         {activeTab === 'farmer' && (
           <div className="space-y-6">
             <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl flex items-center justify-between">
@@ -109,15 +118,22 @@ export default function App() {
                 <h3 className="text-lg font-bold text-amber-900">Hold Nashik Onion Lots for 4 Days</h3>
                 <p className="text-xs text-amber-700">Demand in Mumbai processing hubs is forecasted to rise by 8% this Friday.</p>
               </div>
-              <button onClick={() => alert("AI Forecast: Prices for Nashik Onion are expected to peak by Friday due to festival demand spikes. Recommended action: Hold.")}className="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-2 rounded-lg font-semibold transition">View Forecast </button>
+              <button 
+                onClick={() => alert("AI Forecast: Prices for Nashik Onion are expected to peak by Friday due to festival demand spikes. Recommended action: Hold.")}
+                className="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-2 rounded-lg font-semibold transition"
+              >
+                View Forecast
+              </button>
+            </div>
 
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-bold">Your Active Crop Listings</h2>
-              {/* Add this state at the top of your App component if not already there: const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); */}
-
-<button onClick={() => setIsCreateModalOpen(true)}className="bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-emerald-800 transition">
-  <Plus className="w-4 h-4"/> Create New Lot</button>
-              
+              <button 
+                onClick={() => alert("Create New Lot modal opened.")}
+                className="bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-emerald-800 transition"
+              >
+                <Plus className="w-4 h-4"/> Create New Lot
+              </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -138,6 +154,7 @@ export default function App() {
           </div>
         )}
 
+        {/* BUYER PORTAL TAB */}
         {activeTab === 'buyer' && (
           <div className="space-y-6">
             <h2 className="text-lg font-bold">Procurement Feed (Verified Lots)</h2>
@@ -175,6 +192,7 @@ export default function App() {
         )}
       </main>
 
+      {/* SIMULATED ESCROW PAYMENT MODAL */}
       {selectedLot && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
@@ -223,7 +241,7 @@ export default function App() {
                   </div>
                 ) : (
                   <div className="space-y-2 mb-4">
-                    <input type="text" placeholder="Card Number" className="w-full text-xs p-2.5 border rounded-lg" readOnly value="4111 1111 1111 1111" />
+                    <input type="text" placeholder="Card Number (4111 1111 1111 1111)" className="w-full text-xs p-2.5 border rounded-lg" readOnly value="4111 1111 1111 1111" />
                     <div className="flex gap-2">
                       <input type="text" placeholder="MM/YY" className="w-1/2 text-xs p-2.5 border rounded-lg" readOnly value="12/28" />
                       <input type="text" placeholder="CVV" className="w-1/2 text-xs p-2.5 border rounded-lg" readOnly value="123" />
